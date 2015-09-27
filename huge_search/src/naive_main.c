@@ -35,42 +35,8 @@
  *
  */
 
-/* stderr, fprintf */
-#include <stdio.h>
-
-/* GetOpt, exit */
-#include <unistd.h>
-
-/* malloc, free, atoi */
-#include <stdlib.h>
-
-/* Memset, memcpy */
-#include <string.h>
-
-/* Current Time for logging */
-#include <time.h>
-
-/* For uint */
-#include <stdint.h>
-#include <inttypes.h>
-
-/* Get Opt Options */
-#define OPT "b:f:p:h"
-
-/* We only require read access */
-#define OPN_MODE "r"
-
-/* Default Size */
-#define MIN_BUF 256
-
-#define MAGIC 16
-
-#define USAGE(p) fprintf (stderr, "\nUsage: %s -f file -p pattern [-b buffer size] \n", p);
-
-#define LOG_ERR(str) {\
-    time_t now = time(NULL); \
-    fprintf (stderr, "\n[%s] %s:%s %s\n", ctime (&now), __FILE__, __func__, str); \
-}
+#include "../include/macro.h"
+#include "../include/common.h"
 
 int main (int argc, char ** argv) 
 {
@@ -78,8 +44,9 @@ int main (int argc, char ** argv)
 	int rc = 0;
 	char* buf = NULL;
 	char* file = NULL;
-	size_t buf_sz = 0;
+	size_t buf_sz = MIN_BUF;
 	size_t rd_sz = 0;
+	size_t offset = 0;
 	char* pattern = NULL;
 	size_t ptrn_sz = 0;
 
@@ -119,11 +86,11 @@ int main (int argc, char ** argv)
 		if (ptrn_sz > buf_sz) {
 			/* Default size used*/
 			buf_sz = ptrn_sz * MAGIC;
-			if (!buf_sz) buf_sz = MIN_BUF; //Just in case
+			if (!buf_sz) buf_sz = MIN_BUF; //Just in case...
 
 			/* LOG the behaviorial change */
 			fprintf (stderr, "\nBuffer Size = %ld ", buf_sz);
-			fprintf (stderr, "[ignoring buffer size. Reason: Size less than pattern itself]\n");
+			EPRINT ("[ignoring buffer size. Reason: Size less than pattern itself]\n");
 		}
 	
 		FILE * fp = fopen (file, OPN_MODE);
@@ -137,16 +104,32 @@ int main (int argc, char ** argv)
 		bzero (buf, buf_sz);
 		rd_sz = buf_sz;
 
-		while (fread (buf, sizeof (char), rd_sz, fp) != 0) {
-			fprintf (stderr, "%s", buf);
-			rd_sz = buf_sz - ptrn_sz;
+		while (fread (buf+offset, sizeof (char), rd_sz, fp) != 0) {
+#ifdef DEBUG
+			EPRINT (buf+offset);
+#endif
+
+#ifndef ONCE /* Say hello to epistemology. God I am a nerd ;-) */			
+			#define ONCE
+			rd_sz = buf_sz-ptrn_sz;
+			offset = ptrn_sz-1;
+#endif //ONCE
+
             for (size_t index = 0; index < rd_sz; index++) {
-				if (0 == memcmp (buf+rd_sz, pattern, ptrn_sz))
-					fprintf (stderr, "Found a fit!!!");
+#ifdef DEBUG
+				fprintf (stderr, "\nCompairing %.*s v/s %s\n", 
+						ptrn_sz, buf+index, pattern);
+#endif
+				if (0 == memcmp (buf+index, pattern, ptrn_sz)){
+					 EPRINT ("\nFound a fit!!!\n");
+#ifdef DEBUG /* We break on the first hit */
+				exit (EXIT_SUCCESS);
+#endif
+				}
 			}
 
-			memcpy (buf, buf + rd_sz, ptrn_sz - 1);
-			bzero (buf + ptrn_sz - 1, rd_sz);
+			memcpy (buf, buf+rd_sz, offset);
+			bzero (buf+offset, rd_sz);
 		}
 	} while (0);
 

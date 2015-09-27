@@ -6,10 +6,14 @@
 !_TAG_PROGRAM_VERSION	5.8	//
 CC	Makefile	/^CC=g++$/;"	m
 CC_FLAGS	Makefile	/^CC_FLAGS=-std=c++0x -Wall -v$/;"	m
-LOG_ERR	src/naive_main.c	70;"	d	file:
-MAGIC	src/naive_main.c	66;"	d	file:
-MIN_BUF	src/naive_main.c	64;"	d	file:
-OPN_MODE	src/naive_main.c	61;"	d	file:
-OPT	src/naive_main.c	58;"	d	file:
-USAGE	src/naive_main.c	68;"	d	file:
+EPRINT	include/macro.h	23;"	d
+LOG_ERR	include/macro.h	17;"	d
+MAGIC	include/macro.h	13;"	d
+MIN_BUF	include/macro.h	11;"	d
+ONCE	src/naive_main.c	113;"	d	file:
+OPN_MODE	include/macro.h	8;"	d
+OPT	include/macro.h	5;"	d
+USAGE	include/macro.h	15;"	d
+_COMMON_	include/common.h	2;"	d
+_MACROS_	include/macro.h	2;"	d
 main	src/naive_main.c	/^int main (int argc, char ** argv) $/;"	f

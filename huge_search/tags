@@ -1,0 +1,15 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+CC	Makefile	/^CC=g++$/;"	m
+CC_FLAGS	Makefile	/^CC_FLAGS=-std=c++0x -Wall -v$/;"	m
+LOG_ERR	src/naive_main.c	70;"	d	file:
+MAGIC	src/naive_main.c	66;"	d	file:
+MIN_BUF	src/naive_main.c	64;"	d	file:
+OPN_MODE	src/naive_main.c	61;"	d	file:
+OPT	src/naive_main.c	58;"	d	file:
+USAGE	src/naive_main.c	68;"	d	file:
+main	src/naive_main.c	/^int main (int argc, char ** argv) $/;"	f

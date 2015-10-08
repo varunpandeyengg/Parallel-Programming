@@ -4,16 +4,47 @@
 !_TAG_PROGRAM_NAME	Exuberant Ctags	//
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
 !_TAG_PROGRAM_VERSION	5.8	//
+BILLION	include/macro.h	20;"	d
+BYTE	include/macro.h	16;"	d
 CC	Makefile	/^CC=g++$/;"	m
 CC_FLAGS	Makefile	/^CC_FLAGS=-std=c++0x -Wall -v$/;"	m
-EPRINT	include/macro.h	23;"	d
-LOG_ERR	include/macro.h	17;"	d
-MAGIC	include/macro.h	13;"	d
+EPRINT	include/macro.h	33;"	d
+LOG_ERR	include/macro.h	24;"	d
+MAGIC	include/macro.h	15;"	d
 MIN_BUF	include/macro.h	11;"	d
 ONCE	src/naive_main.c	113;"	d	file:
 OPN_MODE	include/macro.h	8;"	d
 OPT	include/macro.h	5;"	d
-USAGE	include/macro.h	15;"	d
+OnExit	src/rk_threaded_main.c	/^void OnExit (void) $/;"	f
+PRIME	include/macro.h	19;"	d
+RADIX	include/macro.h	18;"	d
+THREAD_MAX	include/macro.h	13;"	d
+USAGE	include/macro.h	22;"	d
 _COMMON_	include/common.h	2;"	d
 _MACROS_	include/macro.h	2;"	d
+__STDC_FORMAT_MACROS	include/common.h	20;"	d
+_at_t	src/rk_threaded_main.c	/^typedef struct _at_t {$/;"	s	file:
+at_p	src/rk_threaded_main.c	/^} at_t, *at_p;$/;"	t	typeref:struct:_at_t	file:
+at_t	src/rk_threaded_main.c	/^} at_t, *at_p;$/;"	t	typeref:struct:_at_t	file:
+buf_sz	src/rk_threaded_main.c	/^static size_t buf_sz = MIN_BUF;$/;"	v	file:
+end_ts	src/rk_threaded_main.c	/^static struct timespec end_ts = {0};$/;"	v	typeref:struct:timespec	file:
+file	src/rk_threaded_main.c	/^static char* file = NULL;$/;"	v	file:
+file_size	src/rk_threaded_main.c	/^static off_t file_size = 0;$/;"	v	file:
+first	src/rk_threaded_main.c	/^	at_p first;$/;"	m	struct:__anon1	file:
+insert_byte	src/rk_threaded_main.c	/^int insert_byte(int64_t& current_digest, BYTE to_digest, intptr_t thrd_id)$/;"	f
+insert_bytes	src/rk_threaded_main.c	/^int insert_bytes (int64_t& current_digest, BYTE* data, size_t size, intptr_t thrd_id)$/;"	f
+lf_cnt	src/rk_threaded_main.c	/^	size_t lf_cnt;$/;"	m	struct:__anon1	file:
+line	src/rk_threaded_main.c	/^	size_t line;$/;"	m	struct:_at_t	file:
 main	src/naive_main.c	/^int main (int argc, char ** argv) $/;"	f
+main	src/rk_threaded_main.c	/^int main (int argc, char ** argv) $/;"	f
+msb_multiplier	src/rk_threaded_main.c	/^static uint64_t msb_multiplier = 1;$/;"	v	file:
+next	src/rk_threaded_main.c	/^	_at_t* next; $/;"	m	struct:_at_t	file:
+print_diff	src/rk_threaded_main.c	/^void print_diff(timespec start, timespec end)$/;"	f
+ptrn_fngrprnt	src/rk_threaded_main.c	/^static int64_t ptrn_fngrprnt = 0;$/;"	v	file:
+ptrn_sz	src/rk_threaded_main.c	/^static size_t ptrn_sz = 0;$/;"	v	file:
+remove_byte	src/rk_threaded_main.c	/^int remove_byte(int64_t& current_digest, BYTE from_digest)$/;"	f
+result_t	src/rk_threaded_main.c	/^} result_t;$/;"	t	typeref:struct:__anon1	file:
+results	src/rk_threaded_main.c	/^static result_t results [THREAD_MAX] = {0};$/;"	v	file:
+start_ts	src/rk_threaded_main.c	/^static struct timespec start_ts = {0};$/;"	v	typeref:struct:timespec	file:
+thrd_cnt	src/rk_threaded_main.c	/^static uint16_t thrd_cnt = 0;$/;"	v	file:
+thread_proc	src/rk_threaded_main.c	/^void* thread_proc (void* param)$/;"	f

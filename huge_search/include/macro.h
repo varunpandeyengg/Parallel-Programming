@@ -8,7 +8,7 @@
 #define OPN_MODE "r"
 
 /* Default Size */
-#define MIN_BUF 64//256//610155
+#define MIN_BUF 256//4096//64//256//610155
 
 #define THREAD_MAX 8
 

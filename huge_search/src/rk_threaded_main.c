@@ -38,6 +38,8 @@
 #include "../include/macro.h"
 #include "../include/common.h"
 
+static int rc = 0;
+static double total = 0;
 static char* file = NULL;
 static size_t ptrn_sz = 0;
 static off_t file_size = 0;
@@ -58,14 +60,16 @@ typedef struct _at_t {
 typedef struct {
 	size_t lf_cnt;
 	at_p first;
+	struct timespec start_ts;
+	struct timespec end_ts;
 } result_t;
 
-static result_t results [THREAD_MAX] = {0};
+static result_t results [THREAD_MAX];
 
-//static size_t line_pr_thrd [THREAD_MAX] = {0};
 void print_diff(timespec start, timespec end)
 {
 	timespec tmp;
+	double sec;
 	if ((end.tv_nsec-start.tv_nsec)<0) {
 		tmp.tv_sec = end.tv_sec-start.tv_sec-1;
 		tmp.tv_nsec = BILLION+end.tv_nsec-start.tv_nsec;
@@ -74,15 +78,27 @@ void print_diff(timespec start, timespec end)
 		tmp.tv_nsec = end.tv_nsec-start.tv_nsec;
 	}
 
-	fprintf (stderr, "\nTotal time taken: %ldsec %ldnsec", tmp.tv_sec, tmp.tv_nsec);
+	sec = (double) tmp.tv_sec + ((double)tmp.tv_nsec/BILLION);
+	
+	if (sec < total || total == 0) total = sec;
+	fprintf (stderr, "\nTime taken: %ld sec %ld nsec i.e. %0.5f sec", tmp.tv_sec, tmp.tv_nsec, sec);
 }
+
 /* Cleanup rutine before successfull termination of this program
  */
 void OnExit (void) 
 {	
 	if (file) free (file);
+	
+	EPRINT ("\n");
+	
+	if (rc != 0)
+		return;
 
 	size_t total_lf = 0;
+	size_t found_cnt = 0;
+	
+	EPRINT ("\n-------------------------------Search Result--------------------------------------");
 	for (int id = 0; id < THREAD_MAX; ++id) {
 		at_p at = results[id].first;
 		while (at) {
@@ -90,30 +106,34 @@ void OnExit (void)
 			fprintf (stderr, "\nPattern Found at line: %ld", total_lf + at->line);
 			at = at->next;
 			free (tmp);
+			found_cnt++;
 		}
 		
 		total_lf += results[id].lf_cnt;
 		total_lf++; //Minor Correction
 	}
-	
-	//print_diff(start_ts, end_ts);
-	EPRINT ("\nTerminating Now...\n");
+
+
+	fprintf (stderr, "\nThe pattern was found %ld times in %0.5f seconds", found_cnt, total);
+	EPRINT ("\n----------------------------------------------------------------------------------\n");
 }
 
 /* Assuing that the bytes is in the msb position, removes 
  * the byte.
  * returns 0 on success
- */
+ **/
 int remove_byte(int64_t& current_digest, BYTE from_digest)
 {
-		int ret_val = 0;
-//fprintf (stderr, "\nByte Removed %d", from_digest);
-		current_digest = current_digest - (msb_multiplier * from_digest); //shift the byte
-		/*After much head banging, I am adding this code. Underflowing hash, damn it!*/
-		while (current_digest < 0)
-			current_digest += PRIME;
-			
-		return ret_val;
+	int ret_val = 0;
+
+	current_digest = current_digest - (msb_multiplier * from_digest); //shift the byte
+	/*After much head banging, I am adding this code. Underflowing hash, damn it!*/
+	
+	current_digest %= PRIME;
+	while (current_digest < 0)
+		current_digest += PRIME;
+
+	return ret_val;
 }
 
 /* Insert single byte into the digest 
@@ -129,7 +149,6 @@ int insert_byte(int64_t& current_digest, BYTE to_digest, intptr_t thrd_id)
 {
 	int ret_val = 0;
 
-//fprintf (stderr, "\nByte Addded %d", to_digest);
 	current_digest *= RADIX; //shift the byte
 	current_digest += to_digest;
 	current_digest %= PRIME;
@@ -161,7 +180,6 @@ void* thread_proc (void* param)
 
 	size_t msb = 0;
 	FILE* fp = NULL;
-	//size_t rd_sz = 0;
 	off_t rd_off = 0;
 	size_t to_read = 0;
 	size_t byts_read = 0;
@@ -177,8 +195,6 @@ void* thread_proc (void* param)
 
 	to_read = (thrd_cnt == 0) ? file_size : file_size/thrd_cnt;
 	rd_off = to_read * id;
-
-//	fprintf (stderr, "\nInside Thraed %ld", id);
 
 	/* No overlapping needed if sigle thread */ 
 	if (thrd_cnt)
@@ -209,9 +225,8 @@ void* thread_proc (void* param)
 		bzero (buf, buf_sz); /* Not needed really */
 		bzero (window, ptrn_sz);
 
-		clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start_ts);
+		clock_gettime (CLOCK_THREAD_CPUTIME_ID, &start_ts);
 
-		//rd_sz = buf_sz;
 		fp = fopen (file, OPN_MODE);
 		if (!fp) {
 			perror("");
@@ -226,8 +241,6 @@ void* thread_proc (void* param)
 			LOG_ERR ("Unable to seek the string.");
 			break;
 		}
-		
-//		fprintf (stderr, "\nTotal Bytes to read = %ld from offset %ld", to_read, rd_off);
 
 		byts_read = fread (window, sizeof (char), ptrn_sz, fp);
 		if (byts_read != ptrn_sz) {
@@ -235,28 +248,28 @@ void* thread_proc (void* param)
 		    break;
 		} else {
 			insert_bytes (data_dgst, window, ptrn_sz, id);
-		/*	if (id == 0)
-				fprintf (stderr, "\nCurrent window %s - %" PRIi64 "|%" PRIi64, window, data_dgst, ptrn_fngrprnt);
-		*/
+			
 			/* Check if the signature matches the pattern */
 			if (data_dgst == ptrn_fngrprnt) {
-				EPRINT ("\nFound It!");
+				at_p nw_loc = (at_p) malloc (sizeof(at_t));
+				nw_loc->line = results [id].lf_cnt + 1;
+				nw_loc->next = results [id].first;
+				results [id].first = nw_loc;
 			}	
 
 			/* Trivial Step, can be avoided */
 			to_read -= byts_read;
 		}
-		
+	
+		size_t orig_buf_sz = buf_sz;
 		while (to_read > 0) {
-			bzero (buf, buf_sz); // TODO, Not needed
+			bzero (buf, orig_buf_sz); // TODO, Not needed
 			byts_read = fread (buf, sizeof (char), buf_sz, fp);
 			if (ferror(fp))
 				LOG_ERR ("Error occured while reading the file");
 
-			if (0 == byts_read) {
-//				fprintf (stderr, "\nThread %ld We read 0 bytes. Bytes left %ld", id, to_read-byts_read);
+			if (0 == byts_read) 
 				break;
-			}
 			
 			for (size_t i = 0; i < byts_read; i++) {	
 				remove_byte (data_dgst, window [msb]);
@@ -266,36 +279,33 @@ void* thread_proc (void* param)
 				if ((++msb) == ptrn_sz)
 					msb = 0;
 
-/*				if (id == 0)
-					fprintf (stderr, "\nCurrent window %s - %" PRIi64 "|%" PRIi64, window, data_dgst, ptrn_fngrprnt);*/
 				if (data_dgst == ptrn_fngrprnt) {
-//					fprintf (stderr, "\nThread %d Current window %s", id, window);
 					at_p nw_loc = (at_p) malloc (sizeof(at_t));
 					nw_loc->line = results [id].lf_cnt + 1;
 					nw_loc->next = results [id].first;
 					results [id].first = nw_loc;
-//					EPRINT ("\nFound It!");
-//					break;
 				}	
 			}
 			
 			if (to_read < buf_sz)
 				buf_sz = to_read;
-			else
+			else {
+				if (to_read < byts_read)
+					break;
+
 				to_read -= byts_read;
+			}
 		}
 
 	} while (0);
 
-	clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end_ts);
-	print_diff(start_ts, end_ts);
+	clock_gettime(CLOCK_THREAD_CPUTIME_ID, &end_ts);
+	fprintf (stderr, "\nFor thread ID - %ld", id);
+	print_diff (start_ts, end_ts);
 
 	if (buf) free (buf);
 	if (window) free (window);
 	if (fp) fclose (fp);
-
-	
-//	fprintf (stderr, "\nClosing Thraed %d", id);
 	
 	return (struct thread_info *) NULL;
 }
@@ -303,7 +313,6 @@ void* thread_proc (void* param)
 int main (int argc, char ** argv) 
 {
 	int opt;
-	int rc = 0;
 	pthread_t threads [THREAD_MAX];
 	struct stat stats = {0};	
 	char* pattern = NULL;
@@ -331,9 +340,11 @@ int main (int argc, char ** argv)
 			thrd_cnt = atoi (optarg);
 			break;
         case 'h':
+			rc = 1;
             USAGE (argv[0]);
             exit (EXIT_SUCCESS);
         default:
+			rc = -1;
             USAGE (argv[0]);
             exit (EXIT_FAILURE);
         }
@@ -342,18 +353,21 @@ int main (int argc, char ** argv)
 
 	do {
 		if (optind < argc) {
+			rc = -1;
 			LOG_ERR ("Unexpected argument after options\n");
             USAGE (argv[0]);
 			break;
 		}
 
         if (!file || !pattern) {
+			rc = -1;
             LOG_ERR ("Invalid Arguments!");
             USAGE (argv[0]);
             break;
 		}
 
 		if (thrd_cnt < 0 || thrd_cnt > 8) {
+			rc = -1;
             LOG_ERR ("Thread count should be between 1 and 8");
             USAGE (argv[0]);
             break;
@@ -372,8 +386,6 @@ int main (int argc, char ** argv)
 		/* Initialize msb multiplier */
 		for (size_t i = 1; i < ptrn_sz; i++)
 			msb_multiplier = (msb_multiplier * RADIX) % PRIME;
-
-//fprintf (stderr, "\nMsb Multiplier %" PRIu64, msb_multiplier);
 
 		/* Create the pattern fingerprint */
 		insert_bytes (ptrn_fngrprnt, pattern, ptrn_sz, -1);
@@ -407,9 +419,7 @@ int main (int argc, char ** argv)
 					LOG_ERR ("Fatal Error! Unable to join the thread");
 					break;
 				}
-
 			}
-
 		}
 
 		/* Search Complete, End the timer */
@@ -417,5 +427,6 @@ int main (int argc, char ** argv)
 
 	} while (0);
 
+	if (pattern) free (pattern);
 	return rc;
 }

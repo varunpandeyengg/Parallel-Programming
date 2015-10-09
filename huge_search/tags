@@ -27,6 +27,7 @@ _at_t	src/rk_threaded_main.c	/^typedef struct _at_t {$/;"	s	file:
 at_p	src/rk_threaded_main.c	/^} at_t, *at_p;$/;"	t	typeref:struct:_at_t	file:
 at_t	src/rk_threaded_main.c	/^} at_t, *at_p;$/;"	t	typeref:struct:_at_t	file:
 buf_sz	src/rk_threaded_main.c	/^static size_t buf_sz = MIN_BUF;$/;"	v	file:
+end_ts	src/rk_threaded_main.c	/^	struct timespec end_ts;$/;"	m	struct:__anon1	typeref:struct:__anon1::timespec	file:
 end_ts	src/rk_threaded_main.c	/^static struct timespec end_ts = {0};$/;"	v	typeref:struct:timespec	file:
 file	src/rk_threaded_main.c	/^static char* file = NULL;$/;"	v	file:
 file_size	src/rk_threaded_main.c	/^static off_t file_size = 0;$/;"	v	file:
@@ -42,9 +43,12 @@ next	src/rk_threaded_main.c	/^	_at_t* next; $/;"	m	struct:_at_t	file:
 print_diff	src/rk_threaded_main.c	/^void print_diff(timespec start, timespec end)$/;"	f
 ptrn_fngrprnt	src/rk_threaded_main.c	/^static int64_t ptrn_fngrprnt = 0;$/;"	v	file:
 ptrn_sz	src/rk_threaded_main.c	/^static size_t ptrn_sz = 0;$/;"	v	file:
+rc	src/rk_threaded_main.c	/^static int rc = 0;$/;"	v	file:
 remove_byte	src/rk_threaded_main.c	/^int remove_byte(int64_t& current_digest, BYTE from_digest)$/;"	f
 result_t	src/rk_threaded_main.c	/^} result_t;$/;"	t	typeref:struct:__anon1	file:
-results	src/rk_threaded_main.c	/^static result_t results [THREAD_MAX] = {0};$/;"	v	file:
+results	src/rk_threaded_main.c	/^static result_t results [THREAD_MAX];$/;"	v	file:
+start_ts	src/rk_threaded_main.c	/^	struct timespec start_ts;$/;"	m	struct:__anon1	typeref:struct:__anon1::timespec	file:
 start_ts	src/rk_threaded_main.c	/^static struct timespec start_ts = {0};$/;"	v	typeref:struct:timespec	file:
 thrd_cnt	src/rk_threaded_main.c	/^static uint16_t thrd_cnt = 0;$/;"	v	file:
 thread_proc	src/rk_threaded_main.c	/^void* thread_proc (void* param)$/;"	f
+total	src/rk_threaded_main.c	/^static double total = 0;$/;"	v	file:

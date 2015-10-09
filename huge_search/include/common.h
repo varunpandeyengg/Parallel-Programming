@@ -17,7 +17,17 @@
 
 /* For uint */
 #include <stdint.h>
+#define __STDC_FORMAT_MACROS
 #include <inttypes.h>
 
+/* For stat */
+#include <sys/stat.h>
+#include <sys/types.h>
+
+/* For Thread */
+#include <pthread.h>
+
+/* For Timer */
+#include <time.h>
 
 #endif //_COMMON_

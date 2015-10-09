@@ -1,0 +1,57 @@
+Rabin-Karp Advanced String Search Utility
+-----------------------------------------
+
+This utility gives a comprehensive implementation of Rabin-Karp fingerprint algorithm to find a pattern in a huge data file. The implementation assumes that the entire file can not be loaded in the memory and thus, the file will be buffer read. Some of the silent features of the tool are - 
+	1. The tool is a Rabin Karp Implementation of pattern matching.
+	2. The tool will not require extra processing time if we increase the size of pattern.
+	3. The algorithm matches pattern with a window of data heuristically within only 6 ALU operations per match
+	4. The implementation requires only a single pass to the entire data.
+	5. Only a limited size buffer stored in the memnory, So it can process files that cannot fit into the memory
+	6. C Implementation, no stl used.
+	7. Doesn't mem fetch pattern from the memory on every match, keeps a fingerprint into the cache.
+ 	8. Scales up to 3x on parallel from sequential implementation even for smaller files.
+	9. Unix style option support.
+
+The source code is divided into a couple of sub-directories, namely
+	1. bin - contains the binaries related to the tool
+	2. doc - contains readme, test run and other supporting files
+	3. include - contains all the headers used in the implementaion
+	4. test - contains the test data files. Cautions, this could contain very large data samples too.
+	5. tmp - used for internal use
+	6. scripts - Currently Empty. We can keep helper scrips here.
+
+Other than this, you may find Makefile in the main directory. You can use the make infrastructure to build the tool in the following modes
+	1. make - Builds the utility for you to run in release mode
+	2. make clean - Clears all the files generated due to build process or runtime
+	3. make debug - Builds the utility for you to debug using gdb
+Please note that with make, we also regenerate TAG infrastructure. Currently make is in verbose mode.
+
+The first implementation for this tool was a naive implementation of a string matching algorithm. It is a sequential binary, but since we expect small size pattern search, that ammortized cost of the algorithm is again linear.
+This implementation is compatible to huge files.
+
+The main project executes by running the binary, bin/rk_threaded_main.bin. Following are the options for tool: - 
+					$ bin/rk_threaded_main.bin
+	
+	Usage: bin/rk_threaded_main.bin -f file -p pattern [-t #thread -b buffer size]
+	Option:
+	-f Huge file path
+	-p Pattern - For including special charecters, use ""
+	-t Number of threads - If you dont provide this option, the program will execute sequentially
+	-b Buffer Size - Since the entire file cannot be loaded into the memory, the file is loaded this buffer.
+	-h Help
+
+Pleaseck the doc/check_run file for further details.
+
+Threads					Time
+	1				0.01725 seconds	
+
+	2				0.01706 seconds
+
+	4				0.00546 seconds
+	
+	6				0.00719 seconds
+	
+	8				0.00412 seconds
+	
+Total Speedup from sequential to 8 thread parallel ~ 3.0x
+  

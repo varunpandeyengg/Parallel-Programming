@@ -1,0 +1,102 @@
+$ bin/rk_threaded_main.bin -h
+Usage: bin/rk_threaded_main.bin -f file -p pattern [-t #thread -b buffer size
+
+
+$ bin/rk_threaded_main.bin
+[2015-10-09 00:28:02] src/rk_threaded_main.c:main Invalid Arguments!
+Usage: bin/rk_threaded_main.bin -f file -p pattern [-t #thread -b buffer size]
+
+$ bin/rk_threaded_main.bin -f test/pg76.txt -p Adventures -lkasdjlakjsdlkajsd
+bin/rk_threaded_main.bin: invalid option -- 'l'
+Usage: bin/rk_threaded_main.bin -f file -p pattern [-t #thread -b buffer size]
+
+
+$ bin/rk_threaded_main.bin -f test/pg76.txt -p Adventures
+For thread ID - 0
+Time taken: 0 sec 17251095 nsec i.e. 0.01725 sec
+
+-------------------------------Search Result--------------------------------------
+Pattern Found at line: 12015
+Pattern Found at line: 582
+Pattern Found at line: 11
+Pattern Found at line: 3
+The pattern was found 4 times in 0.01725 seconds
+----------------------------------------------------------------------------------
+
+$ bin/rk_threaded_main.bin -f test/pg76.txt -p Adventures -t 2
+
+For thread ID - 0
+Time taken: 0 sec 17059932 nsec i.e. 0.01706 sec
+For thread ID - 1
+Time taken: 0 sec 17349858 nsec i.e. 0.01735 sec
+-------------------------------Search Result--------------------------------------
+Pattern Found at line: 582
+Pattern Found at line: 11
+Pattern Found at line: 3
+Pattern Found at line: 12019
+The pattern was found 4 times in 0.01706 seconds
+----------------------------------------------------------------------------------
+
+
+$ bin/rk_threaded_main.bin -f test/pg76.txt -p Adventures -t 4
+For thread ID - 0
+Time taken: 0 sec 6380714 nsec i.e. 0.00638 sec
+For thread ID - 1
+Time taken: 0 sec 5462596 nsec i.e. 0.00546 sec
+For thread ID - 2
+Time taken: 0 sec 8008838 nsec i.e. 0.00801 sec
+For thread ID - 3
+Time taken: 0 sec 8207318 nsec i.e. 0.00821 sec
+-------------------------------Search Result--------------------------------------
+Pattern Found at line: 582
+Pattern Found at line: 11
+Pattern Found at line: 3
+Pattern Found at line: 12027
+The pattern was found 4 times in 0.00546 seconds
+----------------------------------------------------------------------------------
+
+$ bin/rk_threaded_main.bin -f test/pg76.txt -p Adventures -t 6
+For thread ID - 3
+Time taken: 0 sec 7192239 nsec i.e. 0.00719 sec
+For thread ID - 5
+Time taken: 0 sec 7590318 nsec i.e. 0.00759 sec
+For thread ID - 0
+Time taken: 0 sec 8865579 nsec i.e. 0.00887 sec
+For thread ID - 2
+Time taken: 0 sec 10404505 nsec i.e. 0.01040 sec
+For thread ID - 4
+Time taken: 0 sec 9973625 nsec i.e. 0.00997 sec
+For thread ID - 1
+Time taken: 0 sec 10302246 nsec i.e. 0.01030 sec
+-------------------------------Search Result--------------------------------------
+Pattern Found at line: 582
+Pattern Found at line: 11
+Pattern Found at line: 3
+Pattern Found at line: 12029
+The pattern was found 4 times in 0.00719 seconds
+----------------------------------------------------------------------------------
+
+$ bin/rk_threaded_main.bin -f test/pg76.txt -p Adventures -t 8
+For thread ID - 0
+Time taken: 0 sec 4594677 nsec i.e. 0.00459 sec
+For thread ID - 5
+Time taken: 0 sec 5195905 nsec i.e. 0.00520 sec
+For thread ID - 2
+For thread ID - 1
+Time taken: 0 sec 5216630 nsec i.e. 0.00522 sec
+For thread ID - 4
+For thread ID - 6
+For thread ID - 3
+Time taken: 0 sec 5245487 nsec i.e. 0.00525 sec
+Time taken: 0 sec 5149319 nsec i.e. 0.00515 sec
+Time taken: 0 sec 5250430 nsec i.e. 0.00525 sec
+Time taken: 0 sec 5017375 nsec i.e. 0.00502 sec
+For thread ID - 7
+Time taken: 0 sec 4116907 nsec i.e. 0.00412 sec
+-------------------------------Search Result--------------------------------------
+Pattern Found at line: 582
+Pattern Found at line: 11
+Pattern Found at line: 3
+Pattern Found at line: 12038
+The pattern was found 4 times in 0.00412 seconds
+----------------------------------------------------------------------------------

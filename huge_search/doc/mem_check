@@ -1,0 +1,27 @@
+$ valgrind --leak-check=full bin/rk_threaded_main.bin -f test/pg76.txt -p Adventures
+==9239== Memcheck, a memory error detector
+==9239== Copyright (C) 2002-2012, and GNU GPL'd, by Julian Seward et al.
+==9239== Using Valgrind-3.8.1 and LibVEX; rerun with -h for copyright info
+==9239== Command: bin/rk_threaded_main.bin -f test/pg76.txt -p Adventures
+==9239==
+
+For thread ID - 0
+Time taken: 0 sec 354439439 nsec i.e. 0.35444 sec
+
+-------------------------------Search Result--------------------------------------
+Pattern Found at line: 12015
+Pattern Found at line: 582
+Pattern Found at line: 11
+Pattern Found at line: 3
+The pattern was found 4 times in 0.35444 seconds
+----------------------------------------------------------------------------------
+==9239==
+==9239== HEAP SUMMARY:
+==9239==     in use at exit: 0 bytes in 0 blocks
+==9239==   total heap usage: 9 allocs, 9 frees, 923 bytes allocated
+==9239==
+==9239== All heap blocks were freed -- no leaks are possible
+==9239==
+==9239== For counts of detected and suppressed errors, rerun with: -v
+==9239== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 6 from 6)
+
